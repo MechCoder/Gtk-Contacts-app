@@ -33,19 +33,18 @@ class Window:
        self.window.connect('delete-event',Gtk.main_quit)
        self.window.set_size_request(300,300)
        self.table = Gtk.Table(10,10,True)
-       self.entry1 = Gtk.Entry()
-       
+       self.entry1 = Gtk.Entry()       
        self.entry1.set_text('Enter name')
        self.entry1.connect('changed',self.search)
        self.entry2 = Gtk.Entry()
        self.entry2.set_text('Enter phone number')
        self.button3 = Gtk.Button(label = 'Store Contact')
        self.button3.connect('clicked',self.store)
-       self.button4 = Gtk.Button(label = 'Search Contact')
+       self.label = Gtk.Label('')
        self.table.attach(self.entry1,2,8,2,3)
        self.table.attach(self.entry2,2,8,4,5)
        self.table.attach(self.button3,2,4,6,8)
-       self.table.attach(self.button4,6,8,6,8)
+       self.table.attach(self.label,6,8,6,8)
        self.window.add(self.table)       
        self.window.show_all()
 
@@ -53,12 +52,14 @@ class Window:
         
    def store(self,widget):
        name = self.entry1.get_text()
+       self.entry1.set_text('')
        name = ''.join(list(name.strip().lower()))
        phone_no = self.entry2.get_text()
+       self.entry2.set_text('')
        contacts = shelve.open('database.dat')               
        for contact in contacts:
            if contact == name:               
-               self.Dialog(contact,phone_no)               
+               self.Dialog(contact,phone_no)      
                return
        contacts[name] = phone_no                  
        contacts.close()
@@ -70,9 +71,10 @@ class Window:
        for contact in contacts:
            if contact == text:
                self.entry2.set_text(contacts[contact])
+               self.label.set_text('Search Found')
                contacts.close()  
                return
-       self.entry2.set_text('No search found')
+       self.label.set_text('No search found')
        contacts.close()
        return
 
